@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import Surface from '../shared/Surface';
 import Header from '../shared/Header';
+import Alert from '../shared/Alert';
 import { StyledLabel, StyledRow } from '../shared/Form';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -48,6 +49,7 @@ const LogElement = ({ log, removeLog, editLog }) => {
   const [newDate, setNewDate] = useState(day);
   const [newStartTime, setNewStartTime] = useState(startTime);
   const [newEndTime, setNewEndTime] = useState(endTime);
+  const [alert, setAlert] = useState(false);
 
   const handleRemoveOnClick = () => {
     removeLog(id);
@@ -58,8 +60,15 @@ const LogElement = ({ log, removeLog, editLog }) => {
   }
 
   const handleSaveOnClick = () => {
-    editLog(id, newDate, newStartTime, newEndTime);
-    setEditMode(false);
+    
+
+    if(new Date(`${newDate}T${newEndTime}`).getTime() > new Date(`${newDate}T${newStartTime}`).getTime()) {
+      setAlert(false);
+      editLog(id, newDate, newStartTime, newEndTime);
+      setEditMode(false);
+    } else {
+      setAlert(true);
+    }
   }
 
   return(
@@ -130,6 +139,9 @@ const LogElement = ({ log, removeLog, editLog }) => {
             onChange={(event) => setNewEndTime(event.target.value)}
           />
         </StyledRow>
+        {
+          alert && <Alert>The start time should be earlier than the end time!</Alert>
+        }
         <Button variant="contained" color="secondary" onClick={handleSaveOnClick}>Save</Button>
       </form>
       }
